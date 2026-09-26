@@ -36,10 +36,10 @@ jobs:
         run: |
           set -euo pipefail
           NDK_VERSION="r27d"
-          NDK_URL="https://dl.google.com/android/repository/android-ndk-\${NDK_VERSION}-linux.zip"
-          curl -fL --retry 5 --retry-all-errors "\${NDK_URL}" -o /tmp/android-ndk.zip
+          NDK_URL="https://dl.google.com/android/repository/android-ndk-${NDK_VERSION}-linux.zip"
+          curl -fL --retry 5 --retry-all-errors "${NDK_URL}" -o /tmp/android-ndk.zip
           unzip -q /tmp/android-ndk.zip -d /tmp
-          test -x "/tmp/android-ndk-\${NDK_VERSION}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang++"
+          test -x "/tmp/android-ndk-${NDK_VERSION}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang++"
 
       - name: Fetch Zygisk header
         shell: bash
@@ -68,8 +68,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          sed -i "s/^DOCK_COUNT=.*/DOCK_COUNT=\${{ inputs.dock_count }}/" config/dock.conf
-          grep -Fx "DOCK_COUNT=\${{ inputs.dock_count }}" config/dock.conf
+          sed -i "s/^DOCK_COUNT=.*/DOCK_COUNT=${{ inputs.dock_count }}/" config/dock.conf
+          grep -Fx "DOCK_COUNT=${{ inputs.dock_count }}" config/dock.conf
 
       - name: Package module
         shell: bash
@@ -81,13 +81,13 @@ jobs:
           cp -a config out/oplus_dock_grid/
           cp zygisk/arm64-v8a.so out/oplus_dock_grid/zygisk/
           cd out
-          zip -r9 "../oplus-dock-grid-\${{ inputs.dock_count }}-\${GITHUB_SHA::7}.zip" oplus_dock_grid
+          zip -r9 "../oplus-dock-grid-${{ inputs.dock_count }}-${GITHUB_SHA::7}.zip" oplus_dock_grid
           cd ..
-          unzip -t "oplus-dock-grid-\${{ inputs.dock_count }}-\${GITHUB_SHA::7}.zip"
+          unzip -t "oplus-dock-grid-${{ inputs.dock_count }}-${GITHUB_SHA::7}.zip"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: oplus-dock-grid-\${{ inputs.dock_count }}
-          path: oplus-dock-grid-\${{ inputs.dock_count }}-\${GITHUB_SHA::7}.zip
+          name: oplus-dock-grid-${{ inputs.dock_count }}
+          path: oplus-dock-grid-${{ inputs.dock_count }}-${GITHUB_SHA::7}.zip
           if-no-files-found: error
