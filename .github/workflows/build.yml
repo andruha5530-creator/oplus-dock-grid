@@ -1,0 +1,21 @@
+name: Build KernelSU module
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package module
+        run: |
+          set -e
+          mkdir -p out/oplus_dock_grid
+          cp -a module.prop customize.sh service.sh action.sh config native out/oplus_dock_grid/
+          cd out
+          zip -r9 ../oplus-dock-grid-${GITHUB_SHA::7}.zip oplus_dock_grid
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oplus-dock-grid
+          path: oplus-dock-grid-*.zip
